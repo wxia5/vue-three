@@ -2,6 +2,7 @@ import * as THREE from "three";
 var Stats = require("../../static/lib/stats")
 require("../../static/lib/OrbitControls")
 import { MeshUtil } from './geometryUtil'
+import axios from 'axios' 
 export class ThreeUtil{
     constructor(dom){
         this.stats = this.initStats();
@@ -22,7 +23,7 @@ export class ThreeUtil{
         this.webGLRenderer.setSize(window.innerWidth, window.innerHeight  );
         this.webGLRenderer.setPixelRatio( window.devicePixelRatio );
         this.spotLight = new THREE.SpotLight(0xffffff);
-        this.spotLight.position.set(0,100,0);
+        this.spotLight.position.set(0,1,0);
         // this.lights = [];
         // this.lights[ 0 ] = new THREE.PointLight( 0xffffff, 1, 0 );
         // this.lights[ 1 ] = new THREE.PointLight( 0xffffff, 1, 0 );
@@ -86,6 +87,59 @@ export class ThreeUtil{
         this.add(this.ring)
         this.add(this.ring2)
 
+        axios.get("../static/data/china_simplify.json").then((e)=>{
+            console.log(e)
+            var features = e.data.features;
+            var coordArr = features.map((e)=>{
+                if(e.geometry.type ==="Polygon"){
+                    return {
+                        coord:e.geometry.coordinates,
+                        type:"Polygon"
+                    }
+                }else if(e.geometry.type ==="MultiPolygon"){
+                    return {
+                        coord:e.geometry.coordinates,
+                        type:"MultiPolygon"
+                    }
+                }
+                
+            })
+            console.log(coordArr)
+            return coordArr
+        }).then((e)=>{
+            e.forEach(element => {
+                if(element.type === "Polygon"){
+                    var geom = MeshUtil.newShapeGeom(element);
+                    var rect = MeshUtil.newShape(geom);
+                    var edge = MeshUtil.newEdge(geom);
+                    rect.rotation.x = - Math.PI*0.5
+                    edge.rotation.x = - Math.PI*0.5
+                    this.add(rect)
+                    this.add(edge)
+                }else if(element.type === "MultiPolygon"){
+                    // var geom = MeshUtil.newHoleShape(element);
+                    // var rect = MeshUtil.newShape(geom);
+                    // var edge = MeshUtil.newEdge(geom);
+                    // rect.rotation.x = - Math.PI*0.5
+                    // edge.rotation.x = - Math.PI*0.5
+                    // this.add(rect)
+                    // this.add(edge)
+                }
+                
+                
+                
+            },this);
+        })
+
+        // var rect = MeshUtil.newShape([
+        //     [0,0],
+        //     [10,0],
+        //     [10,10],
+        //     [0,10],
+        //     [0,0],
+        // ]);
+        // rect.rotation.x = Math.PI*0.5
+        // this.add(rect)
         this.animate()
 
     }

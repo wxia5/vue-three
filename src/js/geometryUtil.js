@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { ThreeUtil } from ".";
 export class MeshUtil{
     static newBoxMesh(option){
         var geometry = new THREE.BoxGeometry(option.width,option.height,option.depth);
@@ -50,6 +51,53 @@ export class MeshUtil{
             side: THREE.DoubleSide,
         });
         return new THREE.Mesh( geometry, material );
+    }
+    static newShapeGeom(array){
+        var group = new THREE.Object3D();
+        var pointARR = array.coord[0].map((e)=>{
+            return new THREE.Vector2(e[0],e[1])
+        });
+        var shape = new THREE.Shape(pointARR)
+        return new THREE.ExtrudeGeometry( shape , { 
+            depth: 1,
+            bevelEnabled: false,
+            // bevelSize: 1,
+            // bevelThickness: 1 
+        });
+    }
+    static newHoleShape(array){
+        var group = new THREE.Object3D();
+
+        var outline = array.coord[0][0].map((e)=>{
+            return new THREE.Vector2(e[0],e[1])
+        });
+
+
+        var shape = new THREE.Shape(outline)
+        debugger
+        for (let index = 1; index < array.coord.length; index++) {
+            var holeArr = array.coord[index][0];
+            var hole = new THREE.Path(holeArr);
+            debugger
+            shape.holes.push(hole)
+            
+        }
+        return shape
+       
+    }
+    static newShape(geometry){
+
+        return new THREE.Mesh( geometry, new THREE.MeshNormalMaterial() );
+
+    }
+    static newEdge(geometry){
+        var edges = new THREE.EdgesGeometry( geometry );
+        return new THREE.LineSegments( edges, new THREE.LineBasicMaterial( {
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.5
+        } ) );
+
     }
 
 }
