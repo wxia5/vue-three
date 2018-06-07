@@ -52,14 +52,14 @@ export class MeshUtil{
         });
         return new THREE.Mesh( geometry, material );
     }
-    static newShapeGeom(array){
+    static newShapeGeom(coord){
         var group = new THREE.Object3D();
-        var pointARR = array.coord[0].map((e)=>{
+        var pointARR = coord.map((e)=>{
             return new THREE.Vector2(e[0],e[1])
         });
         var shape = new THREE.Shape(pointARR)
         return new THREE.ExtrudeGeometry( shape , { 
-            depth: 1,
+            depth: Math.ceil(Math.random()*10),
             bevelEnabled: false,
             // bevelSize: 1,
             // bevelThickness: 1 
@@ -87,7 +87,12 @@ export class MeshUtil{
     }
     static newShape(geometry){
 
-        return new THREE.Mesh( geometry, new THREE.MeshNormalMaterial() );
+        return new THREE.Mesh( geometry, new THREE.MeshPhongMaterial( {
+            color: "RED",
+            emissive: 0x072534,
+            side: THREE.DoubleSide,
+            flatShading: true
+        }) );
 
     }
     static newEdge(geometry){

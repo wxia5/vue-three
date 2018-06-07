@@ -109,21 +109,38 @@ export class ThreeUtil{
         }).then((e)=>{
             e.forEach(element => {
                 if(element.type === "Polygon"){
-                    var geom = MeshUtil.newShapeGeom(element);
-                    var rect = MeshUtil.newShape(geom);
-                    var edge = MeshUtil.newEdge(geom);
-                    rect.rotation.x = - Math.PI*0.5
-                    edge.rotation.x = - Math.PI*0.5
-                    this.add(rect)
-                    this.add(edge)
+                    if(element.coord.leng>1){
+                        //draw hole polygon
+                    }else if(element.coord.leng=1){
+                        element.coord.forEach((e)=>{
+
+                                var geom = MeshUtil.newShapeGeom(e);
+                                var rect = MeshUtil.newShape(geom);
+                                var edge = MeshUtil.newEdge(geom);
+                                rect.rotation.x = - Math.PI*0.5
+                                edge.rotation.x = - Math.PI*0.5
+                                this.add(rect)
+                                this.add(edge)
+    
+                        },this)
+                    }
+
+
                 }else if(element.type === "MultiPolygon"){
-                    // var geom = MeshUtil.newHoleShape(element);
-                    // var rect = MeshUtil.newShape(geom);
-                    // var edge = MeshUtil.newEdge(geom);
-                    // rect.rotation.x = - Math.PI*0.5
-                    // edge.rotation.x = - Math.PI*0.5
-                    // this.add(rect)
-                    // this.add(edge)
+                    element.coord.forEach((e)=>{
+                        if(e.length>1){
+                            //draw hole polygon
+                        }else if(e.length = 1){
+                            var geom = MeshUtil.newShapeGeom(e[0]);
+                            var rect = MeshUtil.newShape(geom);
+                            var edge = MeshUtil.newEdge(geom);
+                            rect.rotation.x = - Math.PI*0.5
+                            edge.rotation.x = - Math.PI*0.5
+                            this.add(rect)
+                            this.add(edge)
+                        }
+
+                    },this)
                 }
                 
                 
